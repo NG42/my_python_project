@@ -1,4 +1,4 @@
-name: Python CI
+name: Python CI/CD
 
 on:
   push:
@@ -7,31 +7,31 @@ on:
     branches: [ main ]
 
 jobs:
-  lint-and-test:
+  lint-format-test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.11"  # match your project version
+          python-version: "3.12"
 
       - name: Install dependencies
         run: |
           python -m venv .venv
           source .venv/bin/activate
           pip install --upgrade pip
-          pip install black flake8 isort pytest
+          pip install black isort flake8 flake8-docstrings pytest
 
-      - name: Run Black (check)
+      - name: Run Black
         run: |
           source .venv/bin/activate
           black --check .
 
-      - name: Run isort (check)
+      - name: Run isort
         run: |
           source .venv/bin/activate
           isort --check-only .
@@ -44,4 +44,4 @@ jobs:
       - name: Run tests
         run: |
           source .venv/bin/activate
-          pytest
+          pytest --maxfail=1 --disable-warnings -v
